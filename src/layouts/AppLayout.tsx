@@ -11,7 +11,7 @@ export default function AppLayout() {
     refetchOnWindowFocus: false,
   });
 
-  if (isLoading) return <div>Cargando...</div>;
+  if (isLoading) return "Cargando...";
 
   if (isError) return <Navigate to={"/auth/login"} />;
 
