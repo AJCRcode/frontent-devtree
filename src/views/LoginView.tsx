@@ -1,12 +1,26 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage";
 import { LoginForm } from "../types";
-import api from "../config/axios";
 import { toast } from "sonner";
-import { isAxiosError } from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { loginUser } from "../api/DevTreeAPI";
 
 export default function LoginView() {
+  const navigate = useNavigate();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: loginUser,
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success("Bienvenido");
+      console.log("navigate to /admin");
+      navigate("/admin");
+    },
+  });
+
   const initialValues: LoginForm = {
     email: "",
     password: "",
@@ -20,16 +34,8 @@ export default function LoginView() {
     defaultValues: initialValues,
   });
 
-  const handleLogin = async (formdata: LoginForm) => {
-    try {
-      const { data } = await api.post("/auth/login", formdata);
-      localStorage.setItem("AUTH_TOKEN", data);
-      toast.success("Bienvenido a la Plataforma");
-    } catch (error) {
-      if (isAxiosError(error) && error.response) {
-        toast.error(error.response.data.error);
-      }
-    }
+  const handleLogin = (formdata: LoginForm) => {
+    mutate(formdata);
   };
 
   return (
@@ -81,7 +87,8 @@ export default function LoginView() {
         <input
           type="submit"
           className="bg-cyan-400 p-3 text-lg w-full uppercase text-slate-600 rounded-lg font-bold cursor-pointer"
-          value="Iniciar Sesión"
+          disabled={isPending}
+          value={isPending ? "Cargando..." : "Iniciar Sesión"}
         />
       </form>
 
