@@ -6,7 +6,6 @@ import { searchByHandle } from "../api/DevTreeAPI";
 import { Link } from "react-router-dom";
 
 export default function SearchForm() {
-  useMutation;
   const {
     register,
     handleSubmit,
